@@ -1,0 +1,34 @@
+=begin pod
+
+=head1 NAME
+HTTP::Server::Simple::PSGI
+
+=head1 DESCRIPTION
+This Perl 6 module provides a lightweight in process web server that
+conforms to the Perl Server Gateway Interface specification.  It should
+work exactly like the Perl 5 version.
+
+The PSGI spec replaces CGI with something equally simple, but Perl
+specific and likely to be more efficient because of not spawning
+child processes.  Read the SEE ALSO links below for more information.
+
+Unfortunately the Perl 5 test suite is limited to only verifying that
+the module loads and compiles ok.  Admittedly it is hard to test I/O
+based software such as a web server, but it would be worth the effort to
+try.
+
+The Perl Dancer project uses HTTP::Server::Simple::PSGI in Perl 5.  The
+initial motivation for this work was to enable the development of a
+Perl 6 version of Dancer.  That work can begin only after this
+foundation proves itself.
+
+The documentation is written in Pod6 to get some experience with the
+format.
+
+=head1 SEE ALSO
+The Perl 6 Web.pm project L<http://github.com/masak/web>
+The Perl Dancer project L<perldancer.org>
+PSGI spec L<http://github.com/miyagawa/psgi-specs/blob/master/PSGI.pod>
+Rack spec L<http://rack.rubyforge.org/doc/SPEC.html>
+
+=end pod
