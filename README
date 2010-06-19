@@ -3,27 +3,49 @@
 =head1 NAME
 HTTP::Server::Simple::PSGI
 
+=head1 SYNOPSIS
+
+    use HTTP::Server::Simple::PSGI;
+
+    my $host = 'localhost';
+    my port = 80;
+    my $app = sub($env) {
+        return [
+          '200',
+          [ 'Content-Type' => 'text/plain' ],
+          [ "Hello World" ]  # or IO::Handle-like object
+        ];
+    }
+
+    my $server = HTTP::Server::Simple::PSGI.new($port);
+    $server.host($host);
+    $server.app($app);
+    $server.run;
+
 =head1 DESCRIPTION
 This Perl 6 module provides a lightweight in process web server that
 conforms to the Perl Server Gateway Interface specification.  It should
-work exactly like the Perl 5 version.
+work exactly like the Perl 5 version.  In the synopsis above, the only
+difference between Perl 6 and Perl 5 is the use of '.' instead of '->'
+to address object methods.
 
 The PSGI spec replaces CGI with something equally simple, but Perl
 specific and likely to be more efficient because of not spawning
 child processes.  Read the SEE ALSO links below for more information.
-
-Unfortunately the Perl 5 test suite is limited to only verifying that
-the module loads and compiles ok.  Admittedly it is hard to test I/O
-based software such as a web server, but it would be worth the effort to
-try.
 
 The Perl Dancer project uses HTTP::Server::Simple::PSGI in Perl 5.  The
 initial motivation for this work was to enable the development of a
 Perl 6 version of Dancer.  That work can begin only after this
 foundation proves itself.
 
-The documentation is written in Pod6 to get some experience with the
-format.
+=head1 TESTING
+Unfortunately the Perl 5 test suite is limited to only verifying that
+the module loads and compiles ok.  Admittedly it is hard to test I/O
+based software such as a web server, but it would be worth the effort to
+try.
+
+The documentation is written in Pod6 L<http://perlcabal.org/syn/S26.html>
+to get some experience with the format.
 
 =head1 SEE ALSO
 The Perl 6 Web.pm project L<http://github.com/masak/web>
