@@ -1,7 +1,7 @@
 =begin pod
 
 =head1 NAME
-HTTP::Server::Simple::PSGI
+HTTP::Server::Simple - esay server independent web application framework
 
 =head1 SYNOPSIS
 
@@ -23,6 +23,11 @@ HTTP::Server::Simple::PSGI
     $server.run;
 
 =head1 DESCRIPTION
+After implementing about half of HTTP::Server::Simple::PSGI on Rakudo
+Perl 6, the importance of HTTP::Server::Simple became apparent.  That
+epiphany caused a renaming of the project and a shift of development
+emphasis.
+
 This Perl 6 module provides a lightweight in process web server that
 conforms to the Perl Server Gateway Interface specification.  It should
 work exactly like the Perl 5 version.  In the synopsis above, the only
