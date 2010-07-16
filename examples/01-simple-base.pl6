@@ -1,4 +1,6 @@
 # http-server-simple/examples/01-simple-base.pl6
+# A port of the Perl 5 version's first synopsis example
+
 use HTTP::Server::Simple;
 my HTTP::Server::Simple $server .= new; # base class without inheritance
-$server.run;   # says "HTTP::Server::Simple at localhost:8080"
+$server.run;  # now browse http://localhost:8080/whatever?name=value

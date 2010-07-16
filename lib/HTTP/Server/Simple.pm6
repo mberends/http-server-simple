@@ -5,27 +5,10 @@ class HTTP::Server::Simple {
     has $!port;
     has $!host;
     has IO::Socket::INET $!listener;
-    has $!connection;
+    has $!connection;   # returned by accept()
     has Str $!request;
     has @!headers of Str;
-    has %!methods;
-
-    method new ( $port=8080 ) {
-        my %methods = self.^methods Z 1..*;
-        self.bless( self.CREATE(),
-            port => $port,
-            host => 'localhost',
-            methods => %methods
-        );
-    }
-    method lookup_localhost () {
-        # should return this computer's "127.0.0.1" or somesuch
-        return 'localhost';
-    }
-    method port ( $port? ) { $!port; }
-    method host ( $host? ) { $!host; }
-    method background ( *@arguments ) { ... }
-    method run ( *@arguments ) { self.net_server(); }
+    has %!methods;      # used by setup() to know which methods exist
 
     class Output-Interceptor {
         has $.socket is rw;
@@ -35,9 +18,25 @@ class HTTP::Server::Simple {
         }
         multi method say(*@a) {
             # $*ERR.say: "Intercepting say " ~ @a;
-            $.socket.send(@a);
+            $.socket.send(@a ~ "\x0D\x0A");
         }
     }
+
+    method new ( $port=8080 ) {
+        my %methods = self.^methods Z 1..*; # convert list to hash pairs
+        self.bless( self.CREATE(), # self might also be a subclass
+            port    => $port,
+            host    => self.lookup_localhost,
+            methods => %methods
+        );
+    }
+    method lookup_localhost () {
+        # should return this computer's "127.0.0.1" or somesuch
+        return 'localhost';
+    }
+    method port ( $port? ) { $!port; } # TODO: assign
+    method host ( $host? ) { $!host; } # TODO: assign
+    method run ( *@arguments ) { self.net_server(); }
 
     method net_server () {
         # an overrideable, minimal implementation called by run()
@@ -70,17 +69,7 @@ class HTTP::Server::Simple {
             $!connection.close();
         }
     }
-    method restart () { ... }
-    method stdio_handle () {
-        ...
-    }
-    method stdin_handle () {
-        ...
-    }
-    method stdout_handle () {
-        ...
-    }
-    # Important sub-class methods
+    # Methods that a sub-class may want to override
     method handler () {
         # Called from net_server()
         # $*ERR.say: "in handler";
@@ -97,7 +86,8 @@ class HTTP::Server::Simple {
         # $*ERR.say: "in handle_request";
         print "HTTP/1.0 200 OK\x0D\x0A\x0D\x0A";
         say "<html>\n<body>";
-        say "HTTP::Server::Simple at {$!host}:{$!port}";
+        say "{self.WHAT} at {$!host}:{$!port}<br/><br/>";
+        say "{hhmm} {$!request}<br/>";
         say "</body>\n</html>";
         # $*ERR.say: "end handle_request";
     }
@@ -127,13 +117,19 @@ class HTTP::Server::Simple {
         # $*ERR.say: "accepted";
     }
     method post_setup_hook {
+#       my $seconds = floor(time()) % 86400; # 24*60*60
+#       my $hhmm = floor($seconds/3600).fmt('%02d')
+#                ~ floor(($seconds/60) % 60).fmt(':%02d');
+        $*ERR.say: "{hhmm} {$!request}";
+    }
+    method print_banner {
+        say "{hhmm} {self.WHAT} started at {$!host}:{$!port}";
+    }
+    sub hhmm {
         my $seconds = floor(time()) % 86400; # 24*60*60
         my $hhmm = floor($seconds/3600).fmt('%02d')
                  ~ floor(($seconds/60) % 60).fmt(':%02d');
-        $*ERR.say: "{$hhmm} {$!request}";
-    }
-    method print_banner {
-        say "{self.WHAT} started at {$!host}:{$!port}";
+        $hhmm;
     }
     # Methods below are probably not useful to override
     method parse_request () {
@@ -145,7 +141,9 @@ class HTTP::Server::Simple {
             my ( $key, $value ) = $line.split( ': ' );
             if defined($key) and defined($value) {
                 # $*ERR.say: "parse_headers $key => $value";
-                $result.push: $key, $value;
+                # $result.push: $key, $value;
+                $result.push: $key;
+                $result.push: $value;
             }
         }
         return $result;
@@ -158,13 +156,17 @@ class HTTP::Server::Simple {
                                      .bind($!host, $!port)\
                                      .listen();
     }
-    method after_setup_listener () { }
-    method bad_request () {
-        ...
-    }
     method valid_http_method (Str $candidate_method) {
         $candidate_method eq any( <GET POST HEAD PUT DELETE> );
     }
+    # Not Yet Implemented
+    method background ( *@arguments ) { ... }
+    method restart () { ... }
+    method stdio_handle () { ... }
+    method stdin_handle () { ... }
+    method stdout_handle () { ... }
+    method after_setup_listener () { }
+    method bad_request () { ... }
 }
 
 =begin pod
