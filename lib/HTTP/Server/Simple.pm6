@@ -52,6 +52,7 @@ class HTTP::Server::Simple {
             my ($method, $uri, $protocol) = self.parse_request;
             unless self.valid_http_method($method) { self.bad_request; }
             my ( $file, $query-string ) = $uri.split('?',2);
+            $query-string //= ''; # // confuses P5 syntax highlighters
             self.headers( self.parse_headers() );
             self.setup(
                 :method($method), # rakudobug RT
