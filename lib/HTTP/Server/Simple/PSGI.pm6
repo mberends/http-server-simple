@@ -5,6 +5,12 @@ use HTTP::Server::Simple;
 class HTTP::Server::Simple::PSGI is HTTP::Server::Simple {
     # The Perl 6 version inherits from H::T::Simple, not H::T::S::CGI
     has $!psgi_app;
+    has $!request_uri;
+
+    method request_uri ($uri) {
+        $!request_uri = $uri;
+    }
+
     method app( $app ) {
         $!psgi_app = $app;
     }
@@ -13,7 +19,7 @@ class HTTP::Server::Simple::PSGI is HTTP::Server::Simple {
         my $env = {
             'REQUEST_METHOD'    => 'GET',
             'PATH_INFO'         => '',
-            'REQUEST_URI'       => '',
+            'REQUEST_URI'       => $!request_uri,
             'QUERY_STRING'      => '',
             # required PSGI members
             'psgi.version'      => [1,0],
