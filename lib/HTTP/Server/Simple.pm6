@@ -1,7 +1,6 @@
 # HTTP/Server/Simple.pm6
 
-class HTTP::Server::Simple {
-    # it's not a class, you should not create an instance of this
+role HTTP::Server::Simple {
     has $!port;
     has $!host;
     has IO::Socket::INET $!listener;
