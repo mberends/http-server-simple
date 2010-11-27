@@ -127,7 +127,7 @@ class HTTP::Server::Simple {
         say "{hhmm} {self.WHAT} started at {$!host}:{$!port}";
     }
     sub hhmm {
-        my $seconds = floor(time()) % 86400; # 24*60*60
+        my $seconds = floor(time) % 86400; # 24*60*60
         my $hhmm = floor($seconds/3600).fmt('%02d')
                  ~ floor(($seconds/60) % 60).fmt(':%02d');
         $hhmm;
