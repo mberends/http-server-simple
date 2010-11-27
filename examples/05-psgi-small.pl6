@@ -7,11 +7,11 @@ my $app = sub ($env) {
     return [
       '200',
       [ 'Content-Type' => 'text/plain' ],
-      [ "Hello", "World" ]
+      [ "Hello", "World\n\n", $env.perl ]
     ];
 }
 
 my $server = HTTP::Server::Simple::PSGI.new($port);
-$server.host($host);
+$server.host = $host;
 $server.app($app);
 $server.run;

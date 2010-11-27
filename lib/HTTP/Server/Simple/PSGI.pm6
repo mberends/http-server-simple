@@ -5,11 +5,7 @@ use HTTP::Server::Simple;
 class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
     # The Perl 6 version inherits from H::T::Simple, not H::T::S::CGI
     has $!psgi_app;
-    has $!request_uri;
-
-    method request_uri ($uri) {
-        $!request_uri = $uri;
-    }
+    has $.request_uri is rw;
 
     method app( $app ) {
         $!psgi_app = $app;

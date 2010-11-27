@@ -1,13 +1,12 @@
 # HTTP/Server/Simple.pm6
 
 role HTTP::Server::Simple {
-    has $!port;
-    has $!host;
+    has $.port;
+    has $.host is rw;
     has IO::Socket::INET $!listener;
     has $!connection;   # returned by accept()
     has Str $!request;
     has @!headers of Str;
-    has %!methods;      # used by setup() to know which methods exist
 
     class Output-Interceptor {
         has $.socket is rw;
@@ -26,15 +25,12 @@ role HTTP::Server::Simple {
         self.bless( self.CREATE(), # self might also be a subclass
             port    => $port,
             host    => self.lookup_localhost,
-            methods => %methods
         );
     }
     method lookup_localhost () {
         # should return this computer's "127.0.0.1" or somesuch
         return 'localhost';
     }
-    method port ( $port? ) { $!port; } # TODO: assign
-    method host ( $host? ) { $!host; } # TODO: assign
     method run ( *@arguments ) { self.net_server(); }
 
     method net_server () {
@@ -95,15 +91,15 @@ role HTTP::Server::Simple {
         :$query_string, :$localport, :$peername, :$peeraddr, :$localname ) {
         # The following list could probably be rewritten as a loop, but
         # when that was tried it was much, much slower than doing it inline.
-        if %!methods.exists('method')       { self.method(     $method     ) }
-        if %!methods.exists('protocol')     { self.protocol(   $protocol   ) }
-        if %!methods.exists('request_uri')  { self.request_uri($request_uri) }
-        if %!methods.exists('path')         { self.path(       $path       ) }
-        if %!methods.exists('query_string') { self.query_string($query_string) }
-        if %!methods.exists('localport')    { self.localport(  $localport  ) }
-        if %!methods.exists('peername')     { self.peername(   $peername   ) }
-        if %!methods.exists('peeraddr')     { self.peeraddr(   $peeraddr   ) }
-        if %!methods.exists('localname')    { self.localname(  $localname  ) }
+        if self.can('method')       { $!method       = $method       }
+        if self.can('protocol')     { $!protocol     = $protocol     }
+        if self.can('request_uri')  { $!request_uri  = $request_uri  }
+        if self.can('path')         { $!path         = $path         }
+        if self.can('query_string') { $!query_string = $query_string }
+        if self.can('localport')    { $!localport    = $localport    }
+        if self.can('peername')     { $!peername     = $peername     }
+        if self.can('peeraddr')     { $!peeraddr     = $peeraddr     }
+        if self.can('localname')    { $!localname    = $localname    }
     }
     method headers (@headers) {
         for @headers -> $key, $value {
@@ -191,6 +187,14 @@ This is a Perl 6 re-implementation of the Perl 5 HTTP::Server::Simple.
 Web applications generally do use this directly, but use a subclass such
 as HTTP::Server::Simple::CGI, or similar ones based on FastCGI or PSGI.
 
+=head1 ATTRIBUTES
+
+=head2 host
+The server's IP address (rw)
+
+=head2 port
+The port server is to run on (ro)
+
 =head1 METHODS
 
 =head2 new
@@ -202,12 +206,6 @@ connections on the port when the run method is executed.
 Start the server as foreground process in an infinite loop.  The server
 is either a Net::Server, a subclass of that, or (default) a minimal
 emulation of it.
-
-=head2 port
-Optionally set and always return the server's port number.
-
-=head2 host
-Optionally set and always return the server's IP address.
 
 =head2 background
 Fork and run the child process as a server daemon.  Not Yet Implemented.
