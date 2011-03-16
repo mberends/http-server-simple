@@ -4,5 +4,5 @@
     "description" : "Simple webserver module, with PSGI support",
     "depends"     : [],
     "repo-type"   : "git",
-    "repo-url"    : "git://github.com/tadzik/http-server-simple.git"
+    "repo-url"    : "git://github.com/mberends/http-server-simple.git"
 }
