@@ -148,9 +148,11 @@ role HTTP::Server::Simple {
         # say "setup listener on port $!port";
         # PF_INET=2, SOCK_STREAM=1, TCP=6
         $!host //= '0.0.0.0'; # // confuses P5 syntax highlighters
-        $!listener = IO::Socket::INET.socket(2, 1, 6)\
-                                     .bind($!host, $!port)\
-                                     .listen();
+        $!listener = IO::Socket::INET.new(
+            :localhost($!host),
+            :localport($!port),
+            :listen,
+        );
     }
     method valid_http_method (Str $candidate_method) {
         $candidate_method eq any( <GET POST HEAD PUT DELETE> );
