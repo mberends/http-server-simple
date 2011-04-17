@@ -3,6 +3,5 @@
     "version"     : "*",
     "description" : "Simple webserver module, with PSGI support",
     "depends"     : [],
-    "repo-type"   : "git",
-    "repo-url"    : "git://github.com/mberends/http-server-simple.git"
+    "source-url"    : "git://github.com/mberends/http-server-simple.git"
 }
