@@ -48,7 +48,6 @@ role HTTP::Server::Simple {
             unless self.valid_http_method($method) { self.bad_request; }
             my ( $path, $query-string ) = $uri.split('?',2);
             $query-string //= ''; # // confuses P5 syntax highlighters
-            self.headers( self.parse_headers() );
             self.setup(
                 :method($method), # rakudobug RT
                 protocol     => $protocol || 'HTTP/0.9',
@@ -60,6 +59,7 @@ role HTTP::Server::Simple {
                 peername     => 'NYI',
                 peeraddr     => 'NYI',
             );
+            self.headers( self.parse_headers() );
             self.post_setup_hook;
             my $res = self.handler;
             $!connection.close();
@@ -89,17 +89,6 @@ role HTTP::Server::Simple {
     }
     method setup ( :$method, :$protocol, :$request_uri, :$path,
         :$query_string, :$localport, :$peername, :$peeraddr, :$localname ) {
-        # The following list could probably be rewritten as a loop, but
-        # when that was tried it was much, much slower than doing it inline.
-        if self.can('method')       { $!method       = $method       }
-        if self.can('protocol')     { $!protocol     = $protocol     }
-        if self.can('request_uri')  { $!request_uri  = $request_uri  }
-        if self.can('path')         { $!path         = $path         }
-        if self.can('query_string') { $!query_string = $query_string }
-        if self.can('localname')    { $!localname    = $localname    }
-        if self.can('localport')    { $!localport    = $localport    }
-        if self.can('peername')     { $!peername     = $peername     }
-        if self.can('peeraddr')     { $!peeraddr     = $peeraddr     }
     }
     method headers (@headers) {
         for @headers -> $key, $value {
