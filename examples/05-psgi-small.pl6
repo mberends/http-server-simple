@@ -3,11 +3,11 @@ use HTTP::Server::Simple::PSGI;
 
 my $host = 'localhost';
 my $port = 8080;
-my $app = sub ($env) {
+my $app = sub (%env) {
     return [
       '200',
       [ 'Content-Type' => 'text/plain' ],
-      [ "Hello", "World\n\n", $env.perl ]
+      [ "Hello", "World\n\n", %env.perl ]
     ];
 }
 

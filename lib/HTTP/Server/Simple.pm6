@@ -46,7 +46,7 @@ role HTTP::Server::Simple {
             $!request = shift @!headers;
             my ($method, $uri, $protocol) = self.parse_request;
             unless self.valid_http_method($method) { self.bad_request; }
-            my ( $file, $query-string ) = $uri.split('?',2);
+            my ( $path, $query-string ) = $uri.split('?',2);
             $query-string //= ''; # // confuses P5 syntax highlighters
             self.headers( self.parse_headers() );
             self.setup(
@@ -54,7 +54,7 @@ role HTTP::Server::Simple {
                 protocol     => $protocol || 'HTTP/0.9',
                 query_string => $query-string,
                 request_uri  => $uri,
-                path         => $file,
+                path         => $path,
                 localname    => $!host,
                 localport    => $!port,
                 peername     => 'NYI',
@@ -96,10 +96,10 @@ role HTTP::Server::Simple {
         if self.can('request_uri')  { $!request_uri  = $request_uri  }
         if self.can('path')         { $!path         = $path         }
         if self.can('query_string') { $!query_string = $query_string }
+        if self.can('localname')    { $!localname    = $localname    }
         if self.can('localport')    { $!localport    = $localport    }
         if self.can('peername')     { $!peername     = $peername     }
         if self.can('peeraddr')     { $!peeraddr     = $peeraddr     }
-        if self.can('localname')    { $!localname    = $localname    }
     }
     method headers (@headers) {
         for @headers -> $key, $value {
@@ -132,17 +132,13 @@ role HTTP::Server::Simple {
         $!request.split( /\s/ );
     }
     method parse_headers () {
-        my $result = [];
-        for @!headers -> $line {
+        return gather for @!headers -> $line {
             my ( $key, $value ) = $line.split( ': ' );
             if defined($key) and defined($value) {
                 # $*ERR.say: "parse_headers $key => $value";
-                # $result.push: $key, $value;
-                $result.push: $key;
-                $result.push: $value;
+                take $key, $value;
             }
         }
-        return $result;
     }
     method setup_listener () {
         # say "setup listener on port $!port";
