@@ -5,18 +5,46 @@ use HTTP::Server::Simple;
 class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
     # The Perl 6 version inherits from H::T::Simple, not H::T::S::CGI
     has $!psgi_app;
-    has $.request_uri is rw;
+    has $.localname;
+    has $.localport;
+    has $.method;
+    has $.protocol;
+    has $.request_uri;
+    has $.path;
+    has $.query_string;
+    has $.peeraddr;
+    has %!env;
 
     method app( $app ) {
         $!psgi_app = $app;
     }
+    method headers (@headers) {
+        %!env = Nil;
+        for @headers -> $key is copy, $value {
+            $key ~~ s:g /\-/_/;
+            $key .= uc;
+
+            $key = 'HTTP_' ~ $key unless $key eq any(<CONTENT_LENGTH CONTENT_TYPE>);
+            # RAKUDO: :exists doesn't exist yet
+            if %!env.exists($key) {
+                # This is how P5 Plack::HTTPParser::PP handles this
+                %!env{$key} ~= ", $value";
+            }
+            else {
+                %!env{$key} = $value;
+            }
+        }
+    }
     method handler { # overrides HTTP::Server::Simple
         # $*ERR.say: "in PSGI.handler";
-        my $env = {
-            'REQUEST_METHOD'    => 'GET',
-            'PATH_INFO'         => '',
+        %!env{.key} = .value for (
+            'SERVER_NAME'       => $!localname,
+            'SERVER_PORT'       => $!localport,
+            'REQUEST_METHOD'    => $!method,
+            'PATH_INFO'         => $!path,
             'REQUEST_URI'       => $!request_uri,
-            'QUERY_STRING'      => '',
+            'QUERY_STRING'      => $!query_string,
+            'REMOTE_ADDR'       => $!peeraddr,
             # required PSGI members
             'psgi.version'      => [1,0],
             'psgi.url_scheme'   => 'http',
@@ -26,12 +54,13 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
             'psgi.runonce'      => Bool::False,
             'psgi.nonblocking'  => Bool::False,
             'psgi.streaming'    => Bool::False,
-        }
+        );
+
         # Note: the handler method in HTTP::Server::Simple calls the
         # handle_request method but that becomes psgi_app() over here.
         # Instead it calls handle_response later on.
         my $response_ref = defined($!psgi_app)
-            ?? $!psgi_app($env) # app must return [status,[headers],[body]]
+            ?? $!psgi_app(%!env) # app must return [status,[headers],[body]]
             !! [500,[Content-Type => 'text/plain'],[self.WHAT,"app missing"]];
         my $status  = $response_ref[0];
         my @headers = $response_ref[1];
@@ -57,7 +86,7 @@ HTTP::Server::Simple::PSGI - Perl Server Gateway Interface web server
 
     my $host = 'localhost';
     my port = 80;
-    my $app = sub($env) {
+    my $app = sub(%env) {
         return [
           '200',
           [ 'Content-Type' => 'text/plain' ],
