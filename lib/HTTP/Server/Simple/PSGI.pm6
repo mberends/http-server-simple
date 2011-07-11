@@ -5,21 +5,35 @@ use HTTP::Server::Simple;
 class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
     # The Perl 6 version inherits from H::T::Simple, not H::T::S::CGI
     has $!psgi_app;
-    has $.localname;
-    has $.localport;
-    has $.method;
-    has $.protocol;
-    has $.request_uri;
-    has $.path;
-    has $.query_string;
-    has $.peeraddr;
     has %!env;
 
     method app( $app ) {
         $!psgi_app = $app;
     }
+    method setup ( :$localname, :$localport, :$method, :$request_uri,
+        :$path, :$query_string, :$peername, :$peeraddr, *%rest )
+    {
+        %!env = {
+            'SERVER_NAME'       => $localname,
+            'SERVER_PORT'       => $localport,
+            'REQUEST_METHOD'    => $method,
+            'REQUEST_URI'       => $request_uri,
+            'PATH_INFO'         => $path,
+            'QUERY_STRING'      => $query_string,
+            'REMOTE_NAME'       => $peername,
+            'REMOTE_ADDR'       => $peeraddr,
+            # required PSGI members
+            'psgi.version'      => [1,0],
+            'psgi.url_scheme'   => 'http',
+            'psgi.multithread'  => Bool::False,
+            'psgi.multiprocess' => Bool::False,
+            # optional PSGI members
+            'psgi.runonce'      => Bool::False,
+            'psgi.nonblocking'  => Bool::False,
+            'psgi.streaming'    => Bool::False,
+        };
+    }
     method headers (@headers) {
-        %!env = Nil;
         for @headers -> $key is copy, $value {
             $key ~~ s:g /\-/_/;
             $key .= uc;
@@ -37,25 +51,6 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
     }
     method handler { # overrides HTTP::Server::Simple
         # $*ERR.say: "in PSGI.handler";
-        %!env{.key} = .value for (
-            'SERVER_NAME'       => $!localname,
-            'SERVER_PORT'       => $!localport,
-            'REQUEST_METHOD'    => $!method,
-            'PATH_INFO'         => $!path,
-            'REQUEST_URI'       => $!request_uri,
-            'QUERY_STRING'      => $!query_string,
-            'REMOTE_ADDR'       => $!peeraddr,
-            # required PSGI members
-            'psgi.version'      => [1,0],
-            'psgi.url_scheme'   => 'http',
-            'psgi.multithread'  => Bool::False,
-            'psgi.multiprocess' => Bool::False,
-            # optional PSGI members
-            'psgi.runonce'      => Bool::False,
-            'psgi.nonblocking'  => Bool::False,
-            'psgi.streaming'    => Bool::False,
-        );
-
         # Note: the handler method in HTTP::Server::Simple calls the
         # handle_request method but that becomes psgi_app() over here.
         # Instead it calls handle_response later on.

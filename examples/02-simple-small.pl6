@@ -9,14 +9,12 @@ class Example::Simple::Small is HTTP::Server::Simple {
     has %!header;
     has $!path;
     has $!query_string;
+    method setup ( :$path, :$query_string, *%rest ) {
+        $!path = $path;
+        $!query_string = $query_string;
+    }
     method header ( $key, $value ) {
         %!header{$key} = $value;
-    }
-    method path ($path) {
-        $!path = $path;
-    }
-    method query_string ($query_string) {
-        $!query_string = $query_string;
     }
     # override the request handler of the base class
     method handle_request () {
