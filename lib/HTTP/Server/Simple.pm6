@@ -4,9 +4,9 @@ role HTTP::Server::Simple {
     has $.port;
     has $.host is rw;
     has IO::Socket::INET $!listener;
-    has $!connection;   # returned by accept()
+    has $.connection;   # returned by accept()
     has Str $!request;
-    has @!headers of Str;
+    has Str @!headers;
 
     class Output-Interceptor {
         has $.socket is rw;
@@ -43,7 +43,7 @@ role HTTP::Server::Simple {
             # receive only one request per session - no keepalive yet
             my $received = $!connection.recv();
             @!headers = split("\x0D\x0A", $received);
-            $!request = shift @!headers;
+            $!request = @!headers.shift;
             my ($method, $uri, $protocol) = self.parse_request;
             unless self.valid_http_method($method) { self.bad_request; }
             my ( $path, $query-string ) = $uri.split('?',2);
@@ -82,7 +82,7 @@ role HTTP::Server::Simple {
         # $*ERR.say: "in handle_request";
         print "HTTP/1.0 200 OK\x0D\x0A\x0D\x0A";
         say "<html>\n<body>";
-        say "{self.WHAT} at {$!host}:{$!port}<br/><br/>";
+        say self.WHAT, " at {$!host}:{$!port}<br/><br/>";
         say "{hhmm} {$!request}<br/>";
         say "</body>\n</html>";
         # $*ERR.say: "end handle_request";
@@ -108,7 +108,7 @@ role HTTP::Server::Simple {
         $*ERR.say: "{hhmm} {$!request}";
     }
     method print_banner {
-        say "{hhmm} {self.WHAT} started at {$!host}:{$!port}";
+        say "{hhmm} ", self.WHAT, " started at {$!host}:{$!port}";
     }
     sub hhmm {
         my $seconds = floor(time) % 86400; # 24*60*60

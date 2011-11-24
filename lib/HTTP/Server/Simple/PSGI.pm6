@@ -63,13 +63,13 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
         # $*ERR.say: "Status: $status";
         # $*ERR.say: "Headers: {@headers}";
         # $*ERR.say: "Body: {@body}";
-        $!connection.send( "HTTP/1.1 $status OK\x0D\x0A" );
-        $!connection.send(
+        $.connection.send( "HTTP/1.1 $status OK\x0D\x0A" );
+        $.connection.send(
             @headers.map({ $_[0].key ~ ': ' ~ $_[0].value }).join("\n")
         );
-        $!connection.send( "\x0D\x0A" );
-        $!connection.send( "\x0D\x0A" );
-        $!connection.send( @body );
+        $.connection.send( "\x0D\x0A" );
+        $.connection.send( "\x0D\x0A" );
+        $.connection.send( @body );
         # $*ERR.say: "end PSGI.handler";
     }
 }

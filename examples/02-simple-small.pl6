@@ -20,7 +20,7 @@ class Example::Simple::Small is HTTP::Server::Simple {
     method handle_request () {
         print "HTTP/1.0 200 OK\x0D\x0A\x0D\x0A";
         say "<html>\n<body>";
-        say "{self.WHAT} at {$!host}:{$!port}";
+        say self.WHAT, " at {$.host}:{$.port}";
         say "<table border=\"1\">";
         for %!header.keys -> $key {
             my $value = %!header{$key};
