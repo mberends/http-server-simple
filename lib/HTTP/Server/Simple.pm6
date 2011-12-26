@@ -143,13 +143,13 @@ role HTTP::Server::Simple {
         $candidate_method eq any( <GET POST HEAD PUT DELETE> );
     }
     # Not Yet Implemented
-    method background ( *@arguments ) { ... }
-    method restart () { ... }
-    method stdio_handle () { ... }
-    method stdin_handle () { ... }
-    method stdout_handle () { ... }
+    method background ( *@arguments ) { <...> }
+    method restart () { <...> }
+    method stdio_handle () { <...> }
+    method stdin_handle () { <...> }
+    method stdout_handle () { <...> }
     method after_setup_listener () { }
-    method bad_request () { ... }
+    method bad_request () { <...> }
 }
 
 =begin pod
