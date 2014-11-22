@@ -21,7 +21,6 @@ role HTTP::Server::Simple {
     }
 
     method new ( $port=8080 ) {
-        my %methods = self.^methods Z 1..*; # convert list to hash pairs
         self.bless( self.CREATE(), # self might also be a subclass
             port    => $port,
             host    => self.lookup_localhost,
