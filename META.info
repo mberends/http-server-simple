@@ -2,6 +2,10 @@
     "name"        : "HTTP::Server::Simple",
     "version"     : "*",
     "description" : "Simple webserver module, with PSGI support",
+    "provides"    : {
+        "HTTP::Server::Simple"       : "lib/HTTP/Server/Simple.pm6",
+        "HTTP::Server::Simple::PSGI" : "lib/HTTP/Server/Simple/PSGI.pm6"
+    },
     "depends"     : [],
     "source-url"    : "git://github.com/mberends/http-server-simple.git"
 }
