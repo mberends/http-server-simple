@@ -13,7 +13,7 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
     method setup ( :$localname, :$localport, :$method, :$request_uri,
         :$path, :$query_string, :$peername, :$peeraddr, *%rest )
     {
-        %!env = {
+        %!env = 
             'SERVER_NAME'       => $localname,
             'SERVER_PORT'       => $localport,
             'REQUEST_METHOD'    => $method,
@@ -31,7 +31,7 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
             'psgi.runonce'      => Bool::False,
             'psgi.nonblocking'  => Bool::False,
             'psgi.streaming'    => Bool::False,
-        };
+        ;
     }
     method headers (@headers) {
         for @headers -> [$key is copy, $value] {
