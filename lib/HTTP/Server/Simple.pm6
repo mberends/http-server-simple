@@ -91,7 +91,7 @@ role HTTP::Server::Simple {
         :$query_string, :$localport, :$peername, :$peeraddr, :$localname ) {
     }
     method headers (@headers) {
-        for @headers -> $key, $value {
+        for @headers -> [$key, $value] {
             self.header( $key, $value );
         }
     }
