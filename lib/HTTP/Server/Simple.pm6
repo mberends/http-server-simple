@@ -12,11 +12,11 @@ role HTTP::Server::Simple {
         has $.socket is rw;
         multi method print(*@a) {
             # $*ERR.say: "Intercepting print " ~ @a;
-            $.socket.send(@a);
+            $.socket.print(@a);
         }
         multi method say(*@a) {
             # $*ERR.say: "Intercepting say " ~ @a;
-            $.socket.send(@a ~ "\x0D\x0A");
+            $.socket.print(@a ~ "\x0D\x0A");
         }
     }
 
