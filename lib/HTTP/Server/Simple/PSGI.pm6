@@ -56,13 +56,13 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
         # Instead it calls handle_response later on.
         my $response_ref = defined($!psgi_app)
             ?? $!psgi_app(%!env) # app must return [status,[headers],[body]]
-            !! [500,[Content-Type => 'text/plain'],[self.WHAT,"app missing"]];
+            !! [500,[Content-Type => 'text/plain'],[self.WHAT.perl,"app missing"]];
         my $status  = $response_ref[0];
         my @headers = $response_ref[1];
         my @body    = $response_ref[2];
         # $*ERR.say: "Status: $status";
         # $*ERR.say: "Headers: {@headers}";
-        # $*ERR.say: "Body: {@body}";
+		# $*ERR.say: "Body: {@body}";
         $.connection.print( "HTTP/1.1 $status OK\x0D\x0A" );
         $.connection.print(
             @headers.map({ $_[0].key ~ ': ' ~ $_[0].value }).join("\n")
