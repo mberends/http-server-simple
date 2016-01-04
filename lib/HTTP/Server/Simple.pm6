@@ -8,7 +8,7 @@ role HTTP::Server::Simple {
     has Str $!request;
     has Str @!headers;
 
-    class Output-Interceptor {
+    my class Output-Interceptor {
         has $.socket is rw;
         multi method print(*@a) {
             # $*ERR.say: "Intercepting print " ~ @a;
