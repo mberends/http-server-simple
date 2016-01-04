@@ -34,7 +34,7 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
         };
     }
     method headers (@headers) {
-        for @headers -> $key is copy, $value {
+        for @headers -> [$key is copy, $value] {
             $key ~~ s:g /\-/_/;
             $key .= uc;
 
