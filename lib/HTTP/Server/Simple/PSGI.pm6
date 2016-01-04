@@ -40,7 +40,7 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
 
             $key = 'HTTP_' ~ $key unless $key eq any(<CONTENT_LENGTH CONTENT_TYPE>);
             # RAKUDO: :exists doesn't exist yet
-            if %!env.exists($key) {
+            if %!env{$key}:exists {
                 # This is how P5 Plack::HTTPParser::PP handles this
                 %!env{$key} ~= ", $value";
             }
