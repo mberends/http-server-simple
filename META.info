@@ -1,4 +1,5 @@
 {
+	"perl"        : "6.*,
     "name"        : "HTTP::Server::Simple",
     "version"     : "*",
     "description" : "Simple webserver module, with PSGI support",
@@ -8,5 +9,6 @@
         "HTTP::Server::Simple::PSGI" : "lib/HTTP/Server/Simple/PSGI.pm6"
     },
     "depends"     : [],
+	"resources"   : [],
     "source-url"    : "git://github.com/gfldex/http-server-simple.git"
 }
