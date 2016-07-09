@@ -1,14 +1,14 @@
 {
-	"perl"        : "6.*",
+    "perl"        : "6.*",
     "name"        : "HTTP::Server::Simple",
-    "version"     : "*",
+    "version"     : "0.1.2",
     "description" : "Simple webserver module, with PSGI support",
-	"authors"     : [ "Martin Berends", "Wenzel P. P. Peppmeyer" ],
+    "authors"     : [ "Martin Berends", "Wenzel P. P. Peppmeyer" ],
     "provides"    : {
         "HTTP::Server::Simple"       : "lib/HTTP/Server/Simple.pm6",
         "HTTP::Server::Simple::PSGI" : "lib/HTTP/Server/Simple/PSGI.pm6"
     },
     "depends"     : [],
-	"resources"   : [],
+    "resources"   : [],
     "source-url"    : "git://github.com/gfldex/http-server-simple.git"
 }
