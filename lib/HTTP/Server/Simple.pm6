@@ -1,9 +1,9 @@
 # HTTP/Server/Simple.pm6
 
-role HTTP::Server::Simple {
+role HTTP::Server::Simple[IO::Socket ::SocketType = IO::Socket::INET] {
     has $.port;
     has $.host is rw;
-    has IO::Socket::INET $!listener;
+    has SocketType $!listener;
     has $.connection;   # returned by accept()
     has Str $!request;
     has Str @!headers;
@@ -20,8 +20,8 @@ role HTTP::Server::Simple {
         }
     }
 
-    method new ( $port=8080 ) {
-        self.bless( self.CREATE(), # self might also be a subclass
+    method new ( :$port = 8080 ) {
+        self.bless(
             port    => $port,
             host    => self.lookup_localhost,
         );
