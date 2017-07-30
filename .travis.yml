@@ -3,6 +3,6 @@ sudo: false
 perl6:
   - latest
 install:
-    - rakudobrew build-panda
-    - panda install .
+    - rakudobrew build-zef
+    - zef --debug install .
 
