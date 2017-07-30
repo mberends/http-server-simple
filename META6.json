@@ -8,7 +8,7 @@
         "HTTP::Server::Simple"       : "lib/HTTP/Server/Simple.pm6",
         "HTTP::Server::Simple::PSGI" : "lib/HTTP/Server/Simple/PSGI.pm6"
     },
-    "depends"     : [],
+    "depends"     : [ "Test::META" ],
     "resources"   : [],
     "source-url"    : "git://github.com/gfldex/http-server-simple.git"
 }
