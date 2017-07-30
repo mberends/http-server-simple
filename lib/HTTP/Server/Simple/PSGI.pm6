@@ -13,7 +13,7 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
     method setup ( :$localname, :$localport, :$method, :$request_uri,
         :$path, :$query_string, :$peername, :$peeraddr, *%rest )
     {
-        %!env = {
+        %!env = 
             'SERVER_NAME'       => $localname,
             'SERVER_PORT'       => $localport,
             'REQUEST_METHOD'    => $method,
@@ -31,16 +31,16 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
             'psgi.runonce'      => Bool::False,
             'psgi.nonblocking'  => Bool::False,
             'psgi.streaming'    => Bool::False,
-        };
+        ;
     }
     method headers (@headers) {
-        for @headers -> $key is copy, $value {
+        for @headers -> [$key is copy, $value] {
             $key ~~ s:g /\-/_/;
             $key .= uc;
 
             $key = 'HTTP_' ~ $key unless $key eq any(<CONTENT_LENGTH CONTENT_TYPE>);
             # RAKUDO: :exists doesn't exist yet
-            if %!env.exists($key) {
+            if %!env{$key}:exists {
                 # This is how P5 Plack::HTTPParser::PP handles this
                 %!env{$key} ~= ", $value";
             }
@@ -56,20 +56,20 @@ class HTTP::Server::Simple::PSGI does HTTP::Server::Simple {
         # Instead it calls handle_response later on.
         my $response_ref = defined($!psgi_app)
             ?? $!psgi_app(%!env) # app must return [status,[headers],[body]]
-            !! [500,[Content-Type => 'text/plain'],[self.WHAT,"app missing"]];
+            !! [500,[Content-Type => 'text/plain'],[self.WHAT.perl,"app missing"]];
         my $status  = $response_ref[0];
         my @headers = $response_ref[1];
         my @body    = $response_ref[2];
         # $*ERR.say: "Status: $status";
         # $*ERR.say: "Headers: {@headers}";
-        # $*ERR.say: "Body: {@body}";
-        $.connection.send( "HTTP/1.1 $status OK\x0D\x0A" );
-        $.connection.send(
+		# $*ERR.say: "Body: {@body}";
+        $.connection.print( "HTTP/1.1 $status OK\x0D\x0A" );
+        $.connection.print(
             @headers.map({ $_[0].key ~ ': ' ~ $_[0].value }).join("\n")
         );
-        $.connection.send( "\x0D\x0A" );
-        $.connection.send( "\x0D\x0A" );
-        $.connection.send( @body );
+        $.connection.print( "\x0D\x0A" );
+        $.connection.print( "\x0D\x0A" );
+        $.connection.print( @body );
         # $*ERR.say: "end PSGI.handler";
     }
 }

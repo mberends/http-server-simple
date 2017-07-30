@@ -1,28 +1,27 @@
 # HTTP/Server/Simple.pm6
 
-role HTTP::Server::Simple {
+role HTTP::Server::Simple[IO::Socket ::SocketType = IO::Socket::INET] {
     has $.port;
     has $.host is rw;
-    has IO::Socket::INET $!listener;
+    has SocketType $!listener;
     has $.connection;   # returned by accept()
     has Str $!request;
     has Str @!headers;
 
-    class Output-Interceptor {
+    my class Output-Interceptor {
         has $.socket is rw;
         multi method print(*@a) {
             # $*ERR.say: "Intercepting print " ~ @a;
-            $.socket.send(@a);
+            $.socket.print(@a);
         }
         multi method say(*@a) {
             # $*ERR.say: "Intercepting say " ~ @a;
-            $.socket.send(@a ~ "\x0D\x0A");
+            $.socket.print(@a ~ "\x0D\x0A");
         }
     }
 
-    method new ( $port=8080 ) {
-        my %methods = self.^methods Z 1..*; # convert list to hash pairs
-        self.bless( self.CREATE(), # self might also be a subclass
+    method new ( :$port = 8080 ) {
+        self.bless(
             port    => $port,
             host    => self.lookup_localhost,
         );
@@ -91,7 +90,7 @@ role HTTP::Server::Simple {
         :$query_string, :$localport, :$peername, :$peeraddr, :$localname ) {
     }
     method headers (@headers) {
-        for @headers -> $key, $value {
+        for @headers -> [$key, $value] {
             self.header( $key, $value );
         }
     }

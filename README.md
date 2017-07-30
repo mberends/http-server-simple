@@ -1,4 +1,6 @@
-README for the Rakudo Perl 6 version of HTTP::Server::Simple
+# HTTP::Server::Simple
+
+[![Build Status](https://travis-ci.org/gfldex/http-server-simple.svg?branch=master)](https://travis-ci.org/gfldex/http-server-simple)
 
 This simple embedded web server is similar to HTTP::Daemon, but provides
 more hooks for subclassing and extending.  The subclasses CGI and PSGI give
@@ -15,16 +17,16 @@ where the CGI concerns were not separated from the web server.  In this
 Perl 6 implementation the PSGI concerns are fully separated from the CGI
 ones.
 
-EXAMPLES
+# EXAMPLES
 
 Included are examples of minimal web servers and some that demonstrate use
 of extension hooks and subclassing.
 
-TESTING
+# TESTING
 
 The code is badly under tested, contributions would be welcome.
 
-SEE ALSO
+# SEE ALSO
 
 The Perl 6 Web.pm project: http://github.com/masak/web
 The Perl Dancer project: perldancer.org
